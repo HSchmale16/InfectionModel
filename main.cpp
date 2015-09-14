@@ -1,5 +1,20 @@
 #include "include/Simulation.h"
+#include <iostream>
+#include <fstream>
+#include <cstdio>
 
-int main(){
+int main(int argc, char**argv){
+    gConfig = iniparser_load(argv[1]);
+    if(!gConfig){
+        fprintf(stderr, "Failed to load simulation config\n");
+        return 0;
+    }
+    Simulation sim;
 
+    int ticks = iniparser_getint(gConfig, "world:ticks", 100);
+    for(int i = 0; i < ticks; i++){
+        sim.tick();
+    }
+
+    iniparser_freedict(gConfig);
 }

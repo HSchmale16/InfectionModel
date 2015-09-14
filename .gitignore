@@ -1,3 +1,7 @@
 *.o
 *.out
 main
+
+# Simulation Report Files
+*.simres
+*.dat
