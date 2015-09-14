@@ -29,7 +29,7 @@ int main(int argc, char**argv){
         w.clear();
         w.draw(sim);
         w.display();
-        usleep(100000);
+        usleep(1000000 / 59);
     }
 
     iniparser_freedict(gConfig);
