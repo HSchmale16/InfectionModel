@@ -13,7 +13,7 @@ int main(int argc, char**argv){
     Simulation sim;
 
     sf::RenderWindow w(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT),
-            "Infection Model");
+            "Infection Model", sf::Style::Fullscreen);
 
     printf("Person Size: %d\n", sizeof(Person));
     int ticks = iniparser_getint(gConfig, "world:ticks", 100);
@@ -29,8 +29,7 @@ int main(int argc, char**argv){
         w.clear();
         w.draw(sim);
         w.display();
-        usleep(1000000 / 59);
+        usleep(1000000 / 60);
     }
-
     iniparser_freedict(gConfig);
 }

@@ -88,6 +88,7 @@ public:
     bool infected(){
         return m_infected;
     }
+    
     void infect(){
         m_infected = true;
         m_s.setFillColor(sf::Color::Red);
