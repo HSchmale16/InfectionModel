@@ -45,7 +45,7 @@ public:
         }    
     }
 
-    void tick(){
+    int tick(){
         // it0 is the infector
         // it1 is the infectee
         for(std::vector<Person>::iterator it0 = m_persons.begin();
@@ -54,16 +54,29 @@ public:
                 continue; // skip this iteration
             for(std::vector<Person>::iterator it1 = m_persons.begin();
                     it1 != m_persons.end(); ++it1){
-                if(it1->infected() == true){
+                if(it1 == it0)
+                    continue; // skip over self
+                if(it0->infected() == true){
                     this->performInfection(*it0, *it1);
                 }
             }
         }
+        int infectedCount = 0;
         for(std::vector<Person>::iterator it = m_persons.begin();
                 it != m_persons.end(); ++it){
+            if(it->infected() == true){
+                infectedCount++;
+            }
             m_simfile << *it;
             it->tick();
         }
+        m_reportfile << infectedCount << SEP << m_persons.size()
+                     <<  std::endl;
+        // time to quit?
+        if(infectedCount != m_persons.size())
+            return 0;
+        else
+            return 1; // sim over
     }
 };
 #endif // SIMULATION_H_INC

@@ -14,7 +14,7 @@
 
 static char P_BUFF[SCRATCH_BUFF_LEN];
 
-#define SEP ' '
+#define SEP '\t'
 #define P_SEARCH_BUFF(id,val) \
         snprintf(P_BUFF, SCRATCH_BUFF_LEN, "P%d:%s", id, val);
 
@@ -55,7 +55,7 @@ public:
 
     double getDistance(Person& p) {
         return sqrt(pow(this->m_x - p.m_x, 2) +
-                    pow(this->m_y - p.m_y, 2));
+                        pow(this->m_y - p.m_y, 2));
     }
 
     void tick() {
@@ -64,11 +64,15 @@ public:
         m_y += DIR_ARRAY[dir][1];
     }
 
-    bool infected(){return m_infected;}
-    void infect(){m_infected = true;}
+    bool infected(){
+        return m_infected;
+    }
+    void infect(){
+        m_infected = true;
+    }
 
     friend std::ostream& operator<<(std::ostream& stream, const Person& p){
-        stream << p.m_id << SEP << p.m_x << SEP << p.m_y  << SEP
+        stream << p.m_id << SEP << (int)p.m_x << SEP << (int)p.m_y  << SEP
                << p.m_infected << std::endl;
     }
 };
