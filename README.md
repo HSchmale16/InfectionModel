@@ -1,0 +1,3 @@
+# InfectionModel
+An infection model
+
