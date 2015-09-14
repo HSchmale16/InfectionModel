@@ -15,9 +15,11 @@ private:
     std::vector<Person> m_persons;
     std::ofstream m_simfile;   //!< File to dump the simulation state each tick
     std::ofstream m_reportfile;
+    int m_tick;
 protected:
 public:
     Simulation(){
+        m_tick = 0;
         size_t persons = iniparser_getint(gConfig, "people:num", 100);
         for(size_t i = 0; i < persons; i++){
             m_persons.push_back(Person());
@@ -42,10 +44,14 @@ public:
     bool performInfection(Person& ter, Person& ee){
         if(ter.getDistance(ee) < iniparser_getdouble(gConfig, "inf:radius", 2)){
             ee.infect();
-        }    
+            return true;
+        }
+        return false;
     }
 
     int tick(){
+        m_tick++;
+        m_reportfile << "TURN " << m_tick << std::endl;
         // it0 is the infector
         // it1 is the infectee
         for(std::vector<Person>::iterator it0 = m_persons.begin();
@@ -70,8 +76,7 @@ public:
             m_simfile << *it;
             it->tick();
         }
-        m_reportfile << infectedCount << SEP << m_persons.size()
-                     <<  std::endl;
+        m_reportfile << "Total Infected: " << infectedCount << std::endl;
         // time to quit?
         if(infectedCount != m_persons.size())
             return 0;

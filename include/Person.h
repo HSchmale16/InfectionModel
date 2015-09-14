@@ -21,14 +21,14 @@ static char P_BUFF[SCRATCH_BUFF_LEN];
 #define MAP_SIZE_2 int(iniparser_getdouble(gConfig, "world:size", 100) / 2)
 
 const double DIR_ARRAY[][2] = {
-    {0,0},
+    {0, 0},
     {0, 1}, // north
     {sqrt(2), sqrt(2)}, // north east
     {1, 0}, // east
     {sqrt(2), -sqrt(2)},
     {0,-1}, // south
     {-sqrt(2), -sqrt(2)},
-    {-1,0},  // west
+    {-1, 0},  // west
     {-sqrt(2), sqrt(2)},
 };
 
@@ -61,7 +61,15 @@ public:
     void tick() {
         int dir = rand() % NUM_DIRS;
         m_x += DIR_ARRAY[dir][0];
+        if(m_x >= MAP_SIZE_2)
+            m_x = -MAP_SIZE_2;
+        if(m_x <= -MAP_SIZE_2)
+            m_x = MAP_SIZE_2;
         m_y += DIR_ARRAY[dir][1];
+        if(m_y >= MAP_SIZE_2)
+            m_y = -MAP_SIZE_2;
+        if(m_y <= -MAP_SIZE_2)
+            m_y = MAP_SIZE_2;
     }
 
     bool infected(){
