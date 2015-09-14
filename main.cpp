@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdio>
+#include <unistd.h>
 
 int main(int argc, char**argv){
     gConfig = iniparser_load(argv[1]);
@@ -10,12 +11,25 @@ int main(int argc, char**argv){
         return 0;
     }
     Simulation sim;
-    
+
+    sf::RenderWindow w(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT),
+            "Infection Model");
+
     printf("Person Size: %d\n", sizeof(Person));
     int ticks = iniparser_getint(gConfig, "world:ticks", 100);
-    for(int i = 0; i < ticks; i++){
+    for(int i = 0; (i < ticks && w.isOpen()); i++){
+        sf::Event e;
+        while(w.pollEvent(e)){
+            if(e.type == sf::Event::Closed){
+                w.close();
+            }
+        }
         if(sim.tick() != 0)
             break;
+        w.clear();
+        w.draw(sim);
+        w.display();
+        usleep(100000);
     }
 
     iniparser_freedict(gConfig);

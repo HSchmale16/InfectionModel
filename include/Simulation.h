@@ -10,19 +10,26 @@
 #include <fstream>
 #include "Person.h"
 
-class Simulation{
+class Simulation : public sf::Drawable{
 private:
     std::vector<Person> m_persons;
     std::ofstream m_simfile;   //!< File to dump the simulation state each tick
     std::ofstream m_reportfile;
     int m_tick;
+
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const{
+        for(int i = 0; i < m_persons.size(); i++){
+            target.draw(m_persons[i]);
+        }
+    }
 protected:
 public:
     Simulation(){
         m_tick = 0;
         size_t persons = iniparser_getint(gConfig, "people:num", 100);
         for(size_t i = 0; i < persons; i++){
-            m_persons.push_back(Person());
+            Person p;
+            m_persons.push_back(p);
         }
         m_reportfile.open(iniparser_getstring(gConfig, "world:reportfile", NULL));
         if(!m_reportfile){
@@ -84,4 +91,5 @@ public:
             return 1; // sim over
     }
 };
+
 #endif // SIMULATION_H_INC
