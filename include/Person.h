@@ -51,16 +51,22 @@ protected:
     size_t  m_id;
     double  m_x;
     double  m_y;
-    bool    m_infected;
+    char    m_infected:1;
+    char    m_doctor:1;
 public:
     Person()
         :m_id(nextid++){
+            // init the simulation values from the sim file
             P_SEARCH_BUFF(m_id, "x");
             m_x = iniparser_getdouble(gConfig, P_BUFF, rand() % MAP_SIZE);
             P_SEARCH_BUFF(m_id, "y");
             m_y = iniparser_getdouble(gConfig, P_BUFF, rand() % MAP_SIZE); 
             P_SEARCH_BUFF(m_id, "v");
             m_infected = iniparser_getboolean(gConfig, P_BUFF, false);
+            P_SEARCH_BUFF(m_id, "d");
+            m_doctor = iniparser_getboolean(gConfig, P_BUFF, false);
+            
+            // init the shape
             m_s.setRadius(3.f);
             m_s.setPosition(SCR_X(m_x), SCR_Y(m_y));
             if(m_infected){

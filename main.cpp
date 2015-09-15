@@ -20,6 +20,7 @@ int main(int argc, char**argv){
     SCREEN_HEIGHT = w.getSize().y;
     SCREEN_MIN    = std::min(SCREEN_WIDTH, SCREEN_HEIGHT);
 
+    printf("Person: %d Bytes\n", sizeof(Person));
     int ticks = iniparser_getint(gConfig, "world:ticks", 100);
     for(int i = 0; (i < ticks && w.isOpen()); i++){
         // handle window events so that the operating system doesn't decide

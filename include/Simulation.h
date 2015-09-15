@@ -13,25 +13,34 @@
 class Simulation : public sf::Drawable{
 private:
     std::vector<Person> m_persons;
-    std::ofstream m_simfile;   //!< File to dump the simulation state each tick
+    std::ofstream m_simfile; //!< File to dump the sim state each tick
     std::ofstream m_reportfile;
     int m_tick;
 
-    virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const{
+    virtual void draw(sf::RenderTarget& target,
+            sf::RenderStates states)const{
         for(int i = 0; i < m_persons.size(); i++){
             target.draw(m_persons[i]);
         }
     }
+    
+    /**\param ter The infector
+     * \param ee The infectee
+     */
+    bool performInfection(Person& ter, Person& ee){
+        if(ter.getDistance(ee) < 
+                iniparser_getdouble(gConfig, "inf:radius", 2)){
+            ee.infect();
+            return true;
+        }
+        return false;
+    }
 protected:
 public:
     Simulation(){
-        m_tick = 0;
-        size_t persons = iniparser_getint(gConfig, "people:num", 100);
-        for(size_t i = 0; i < persons; i++){
-            Person p;
-            m_persons.push_back(p);
-        }
-        m_reportfile.open(iniparser_getstring(gConfig, "world:reportfile", NULL));
+        // open files for saving state and making reports
+        m_reportfile.open(iniparser_getstring(gConfig, "world:reportfile",
+                    NULL));
         if(!m_reportfile){
             throw 1;
         }
@@ -39,21 +48,17 @@ public:
         if(!m_simfile){
             throw 1;
         }
+        // create initial population
+        m_tick = 0;
+        size_t persons = iniparser_getint(gConfig, "people:num", 100);
+        for(size_t i = 0; i < persons; i++){
+            Person p;
+            m_persons.push_back(p);
+        }
     }
     
     ~Simulation(){
         m_reportfile.close();
-    }
-
-    /**\param ter The infector
-     * \param ee The infectee
-     */
-    bool performInfection(Person& ter, Person& ee){
-        if(ter.getDistance(ee) < iniparser_getdouble(gConfig, "inf:radius", 2)){
-            ee.infect();
-            return true;
-        }
-        return false;
     }
 
     int tick(){
