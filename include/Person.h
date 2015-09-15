@@ -15,13 +15,16 @@
 
 static char P_BUFF[SCRATCH_BUFF_LEN];
 
-#define SCR_X(x) (((x) / MAP_SIZE) * SCREEN_WIDTH)
-#define SCR_Y(y) (((y) / MAP_SIZE) * SCREEN_HEIGHT)
+// define seperator character
 #define SEP '\t'
+// Screen Pixel Coordinate Calculation
+#define SCR_X(x) (((x) / MAP_SIZE) * SCREEN_MIN)
+#define SCR_Y(y) (((y) / MAP_SIZE) * SCREEN_MIN)
 #define P_SEARCH_BUFF(id,val) \
         snprintf(P_BUFF, SCRATCH_BUFF_LEN, "P%d:%s", id, val);
-#define MAP_SIZE_2 (iniparser_getint(gConfig, "world:size", 100) / 2)
+// Make getting the map size a simple macro
 #define MAP_SIZE iniparser_getint(gConfig, "world:size", 100) 
+#define MAP_SIZE_2 (MAP_SIZE / 2)
 
 const double DIR_ARRAY[][2] = {
     {0, 0},
@@ -58,7 +61,7 @@ public:
             m_y = iniparser_getdouble(gConfig, P_BUFF, rand() % MAP_SIZE); 
             P_SEARCH_BUFF(m_id, "v");
             m_infected = iniparser_getboolean(gConfig, P_BUFF, false);
-            m_s.setRadius(2.f);
+            m_s.setRadius(3.f);
             m_s.setPosition(SCR_X(m_x), SCR_Y(m_y));
             if(m_infected){
                 this->infect();

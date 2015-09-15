@@ -7,7 +7,8 @@ extern "C"{
 
 dictionary* gConfig = NULL;
 
-const int SCREEN_WIDTH = 760;
-const int SCREEN_HEIGHT = 760;
+int SCREEN_WIDTH = 760;
+int SCREEN_HEIGHT = 760;
+int SCREEN_MIN;
 
 #endif // GLOBAL_H_INC
