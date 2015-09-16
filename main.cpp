@@ -3,7 +3,6 @@
 #include <fstream>
 #include <cstdio>
 #include <ctime>
-#include <unistd.h>
 #include <algorithm>
 
 void init(int argc, char** argv){
@@ -24,11 +23,14 @@ int main(int argc, char**argv){
     init(argc, argv);
     Simulation sim;
 
-    sf::RenderWindow w(sf::VideoMode::getDesktopMode(),
-            "Infection Model", sf::Style::Close);
-    SCREEN_WIDTH  = w.getSize().x;
-    SCREEN_HEIGHT = w.getSize().y;
+    // Screen should never be bigger than desktop, and it must be square.
+    SCREEN_WIDTH  = sf::VideoMode::getDesktopMode().height - 40;
+    SCREEN_HEIGHT = sf::VideoMode::getDesktopMode().height - 40;
     SCREEN_MIN    = std::min(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    sf::RenderWindow w(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT),
+            "Infection Model", sf::Style::Close);
+    w.setFramerateLimit(60);
 
     printf("Person: %d Bytes\n", sizeof(Person));
     int ticks = iniparser_getint(gConfig, "world:ticks", 100);
@@ -41,12 +43,13 @@ int main(int argc, char**argv){
                 w.close();
             }
         }
-        if(sim.tick() != 0)
+        if(sim.tick() != 0){
+            printf("All done\n");
             goto done;
+        }
         w.clear();
         w.draw(sim);
         w.display();
-        usleep(1000000 / 60);
     }
 done:
     iniparser_freedict(gConfig);

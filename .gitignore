@@ -1,6 +1,7 @@
 *.o
 *.out
 main
+infection-model
 
 # Simulation Report Files
 *.simres
