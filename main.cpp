@@ -52,7 +52,7 @@ void doConsole(){
     Simulation sim;
     int ticks = iniparser_getint(gConfig, "world:ticks", 100);
     for(int i = 0; i < ticks; i++){
-        sim.tick();
+        if(sim.tick() != 0){break;}
     }
 }
 
