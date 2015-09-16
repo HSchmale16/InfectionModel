@@ -6,16 +6,22 @@
 #include <unistd.h>
 #include <algorithm>
 
-void init(){
-
-}
-
-int main(int argc, char**argv){
+void init(int argc, char** argv){
     gConfig = iniparser_load(argv[1]);
     if(!gConfig){
         fprintf(stderr, "Failed to load simulation config\n");
-        return 0;
+        throw 1;
     }
+    for(int i = 0; i < NUM_DIRS; i++){
+        INI_KEY_ID_GEN(i, "d", "dir");
+        dir_probs[i] = iniparser_getint(gConfig, P_BUFF, 0);
+    }
+    dir_distrib = new std::discrete_distribution<int>(dir_probs.begin(), dir_probs.end());
+    printf("%d\n", (*dir_distrib)(generator));
+}
+
+int main(int argc, char**argv){
+    init(argc, argv);
     Simulation sim;
 
     sf::RenderWindow w(sf::VideoMode::getDesktopMode(),
@@ -36,11 +42,13 @@ int main(int argc, char**argv){
             }
         }
         if(sim.tick() != 0)
-            break;
+            goto done;
         w.clear();
         w.draw(sim);
         w.display();
         usleep(1000000 / 60);
     }
+done:
     iniparser_freedict(gConfig);
+    delete dir_distrib;
 }

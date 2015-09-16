@@ -35,7 +35,6 @@ static char P_BUFF[SCRATCH_BUFF_LEN];
 #define MAP_SIZE_2 (MAP_SIZE / 2)
 
 const double DIR_ARRAY[][2] = {
-    {0, 0},
     {0, 1}, // north
     {sqrt(2), sqrt(2)}, // north east
     {1, 0}, // east

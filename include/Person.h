@@ -26,6 +26,7 @@ protected:
     int64_t m_doctor     :  1;
     int64_t m_infectlast : 16; // if infected how many ticks does it last
     int64_t m_cough      :  1; // can only infect if coughing this turn
+    int64_t m_dir        :  4; // direction to travel
 public:
     Person()
         :m_id(nextid++){
@@ -45,6 +46,7 @@ public:
             if(m_infected){
                 this->infect();
             }
+            pickNewDir();
     }
 
     double getDistance(Person& p) {
@@ -52,18 +54,20 @@ public:
                         pow(this->m_y - p.m_y, 2));
     }
 
+    void pickNewDir(){
+        int old_dir = m_dir;
+        do{
+            m_dir = (*dir_distrib)(generator);
+        }while(old_dir == m_dir);
+    }
+
     void tick() {
-        int dir = rand() % NUM_DIRS;
-        m_x += DIR_ARRAY[dir][0];
-        if(m_x >= MAP_SIZE)
-            m_x = 0;
-        if(m_x <= 0)
-            m_x = MAP_SIZE;
-        m_y += DIR_ARRAY[dir][1];
-        if(m_y >= MAP_SIZE)
-            m_y = 0;
-        if(m_y <= 0)
-            m_y = MAP_SIZE;
+        // bounds check
+        if(((m_x >= MAP_SIZE) || (m_x <= 0)) || 
+            ((m_y >= MAP_SIZE) || (m_y <= 0))) this->pickNewDir();
+            
+        m_x += DIR_ARRAY[m_dir][0];
+        m_y += DIR_ARRAY[m_dir][1];
         m_s.setPosition(SCR_X(m_x), SCR_Y(m_y));
     }
 
