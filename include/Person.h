@@ -11,35 +11,6 @@
 #include <SFML/Graphics.hpp>
 #include "global.h"
 
-#define SCRATCH_BUFF_LEN 100
-
-static char P_BUFF[SCRATCH_BUFF_LEN];
-
-// define seperator character
-#define SEP '\t'
-// Screen Pixel Coordinate Calculation
-#define SCR_X(x) (((x) / MAP_SIZE) * SCREEN_MIN)
-#define SCR_Y(y) (((y) / MAP_SIZE) * SCREEN_MIN)
-#define P_SEARCH_BUFF(id,val) \
-        snprintf(P_BUFF, SCRATCH_BUFF_LEN, "P%d:%s", id, val);
-// Make getting the map size a simple macro
-#define MAP_SIZE iniparser_getint(gConfig, "world:size", 100) 
-#define MAP_SIZE_2 (MAP_SIZE / 2)
-
-const double DIR_ARRAY[][2] = {
-    {0, 0},
-    {0, 1}, // north
-    {sqrt(2), sqrt(2)}, // north east
-    {1, 0}, // east
-    {sqrt(2), -sqrt(2)},
-    {0,-1}, // south
-    {-sqrt(2), -sqrt(2)},
-    {-1, 0},  // west
-    {-sqrt(2), sqrt(2)},
-};
-
-const int NUM_DIRS = 9;
-
 class Person : public sf::Drawable{
 private:
     sf::CircleShape m_s;
@@ -51,19 +22,21 @@ protected:
     size_t  m_id;
     double  m_x;
     double  m_y;
-    char    m_infected:1;
-    char    m_doctor:1;
+    int64_t m_infected   :  1;
+    int64_t m_doctor     :  1;
+    int64_t m_infectlast : 16; // if infected how many ticks does it last
+    int64_t m_cough      :  1; // can only infect if coughing this turn
 public:
     Person()
         :m_id(nextid++){
             // init the simulation values from the sim file
-            P_SEARCH_BUFF(m_id, "x");
+            INI_SEC_ID_GEN(m_id, "x", P);
             m_x = iniparser_getdouble(gConfig, P_BUFF, rand() % MAP_SIZE);
-            P_SEARCH_BUFF(m_id, "y");
+            INI_SEC_ID_GEN(m_id, "y", P);
             m_y = iniparser_getdouble(gConfig, P_BUFF, rand() % MAP_SIZE); 
-            P_SEARCH_BUFF(m_id, "v");
+            INI_SEC_ID_GEN(m_id, "v", P);
             m_infected = iniparser_getboolean(gConfig, P_BUFF, false);
-            P_SEARCH_BUFF(m_id, "d");
+            INI_SEC_ID_GEN(m_id, "d", P);
             m_doctor = iniparser_getboolean(gConfig, P_BUFF, false);
             
             // init the shape

@@ -5,7 +5,11 @@
 #include <ctime>
 #include <unistd.h>
 #include <algorithm>
-    
+
+void init(){
+
+}
+
 int main(int argc, char**argv){
     gConfig = iniparser_load(argv[1]);
     if(!gConfig){
