@@ -35,18 +35,35 @@ private:
         }
         return false;
     }
+
+    void writeSimParamReport(){
+        char tmpfilename[] = "./tmpinidumpfile";
+        FILE* ftmp = fopen(tmpfilename, "w");
+        iniparser_dump(gConfig, ftmp);
+        fclose(ftmp);
+        std::ifstream infile(tmpfilename);
+        char c;
+        while(infile.get(c)){
+            m_reportfile << c;
+        } 
+        infile.close();
+        remove(tmpfilename);
+    }
 protected:
 public:
     Simulation(){
         // open files for saving state and making reports
-        m_reportfile.open(iniparser_getstring(gConfig, "world:reportfile",
-                    NULL));
-        if(!m_reportfile){
-            throw 1;
-        }
-        m_simfile.open(iniparser_getstring(gConfig, "world:simfile", NULL));
-        if(!m_simfile){
-            throw 1;
+        if(iniparser_getboolean(gConfig, ":log", false) == true){
+            m_reportfile.open(iniparser_getstring(gConfig, "world:reportfile",
+                        NULL));
+            if(!m_reportfile){
+                throw 1;
+            }
+            m_simfile.open(iniparser_getstring(gConfig, "world:simfile", NULL));
+            if(!m_simfile){
+                throw 1;
+            }
+            writeSimParamReport();
         }
         // create initial population
         m_tick = 0;
@@ -85,15 +102,26 @@ public:
             if(it->infected() == true){
                 infectedCount++;
             }
-            m_simfile << *it;
             it->tick();
         }
-        m_reportfile << "Total Infected: " << infectedCount << std::endl;
         // time to quit?
-        if(infectedCount != m_persons.size())
+        if(infectedCount != m_persons.size()){
+            // only flush out to file if log is true
+            // after all why would we want to 
+            if((iniparser_getboolean(gConfig, ":log", false) == true) &&
+                    m_tick < iniparser_getint(gConfig, "world:ticks", 1000)){
+                for(std::vector<Person>::iterator it = m_persons.begin();
+                        it != m_persons.end(); ++it){
+                    m_simfile << *it;
+                }
+                m_reportfile << "Infected : " << infectedCount << std::endl
+                             << "Healthy  : " << m_persons.size() - infectedCount
+                             << std::endl;
+            }
             return 0;
-        else
+        }else{
             return 1; // sim over
+        }
     }
 };
 
